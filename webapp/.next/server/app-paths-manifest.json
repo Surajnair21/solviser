@@ -1,7 +1,6 @@
 {
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/GlobalProducts/page": "app/dashboard/GlobalProducts/page.js",
-  "/dashboard/legal-service-onboarding/page": "app/dashboard/legal-service-onboarding/page.js",
+  "/dashboard/search/page": "app/dashboard/search/page.js",
   "/dashboard/GlobalProducts/[id]/page": "app/dashboard/GlobalProducts/[id]/page.js",
-  "/dashboard/access-management/page": "app/dashboard/access-management/page.js"
+  "/dashboard/GlobalProducts/page": "app/dashboard/GlobalProducts/page.js"
 }
