@@ -1,59 +1,73 @@
-// File: apps/api/src/controllers/productController.ts
-import { Request, Response } from 'express';
-import * as productService from '../services/productService';
+import { Request, Response } from "express";
+import * as productService from "../services/productService";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
-    const orgId = (req as any).user.organizationId;
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
     const product = await productService.createProduct({
       ...req.body,
-      organizationId: orgId,
-      createdById: userId,
+      createdById: req.user.userId,
+      organizationId: req.user.organizationId,
     });
 
-    res.status(201).json({ success: true, data: product });
+    res.status(201).json({ data: product });
   } catch (err: any) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Failed to create product' });
+    res.status(500).json({ error: err.message });
   }
 };
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const orgId = (req as any).user.organizationId;
-    const products = await productService.getProductsByOrg(orgId);
-    res.json({ success: true, data: products });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to fetch products' });
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+    const products = await productService.getProductsByOrg(req.user.organizationId);
+    res.json({ data: products });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 };
 
 export const getProduct = async (req: Request, res: Response) => {
   try {
     const product = await productService.getProductById(req.params.id);
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-    res.json({ success: true, data: product });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to fetch product' });
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    res.json({ data: product });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 };
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const product = await productService.updateProduct(req.params.id, req.body);
-    res.json({ success: true, data: product });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to update product' });
+    const { id } = req.params;
+    const data = req.body;
+
+    const updated = await productService.updateProduct(id, data);
+
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 };
 
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
-    await productService.deleteProduct(req.params.id);
-    res.json({ success: true, message: 'Product deleted' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Failed to delete product' });
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+    await productService.deleteProduct(req.params.id, req.user.userId);
+    res.json({ message: "Product deleted successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getAllCategories = async (req: Request, res: Response) => {
+  try {
+    const categories = await productService.getAllCategories();
+    res.json({ data: categories.map((c) => c.category) });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 };

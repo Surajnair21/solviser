@@ -9,7 +9,8 @@ import userRouter from './user.routes';
 import verificationRoutes from './verification.routes';
 import onboardingRoutes from './onboarding.routes';
 import providerRoutes from './providers.routes';
-import productRoutes from './productRoutes'; // <-- ADD THIS
+import productRoutes from './productRoutes';
+
 
 const router = Router();
 
